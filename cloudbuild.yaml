@@ -17,6 +17,7 @@ steps:
     args:
       - '-c'
       - |
+        apt-get update && apt-get install -y git
         pip install google-genai
         python ai_reviewer_script.py
     env:
