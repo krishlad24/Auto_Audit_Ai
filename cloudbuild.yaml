@@ -6,6 +6,7 @@ steps:
       - 'GITHUB_TOKEN=$_GITHUB_TOKEN'
       - 'GITHUB_SHA=$COMMIT_SHA'
       - 'GITHUB_EVENT_NAME=push'
+      - 'GITHUB_WORKSPACE=/workspace'
     
   # Step 2: Run a basic syntax check (Linter)
   - name: 'python:3.10-slim'
