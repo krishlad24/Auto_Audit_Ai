@@ -22,6 +22,8 @@ steps:
         python ai_reviewer_script.py
     env:
       - 'API_KEY=$_GEMINI_API_KEY'
+      - 'GITHUB_TOKEN=$_GITHUB_TOKEN'
+      - 'COMMIT_SHA=$COMMIT_SHA'
 
 options:
   logging: CLOUD_LOGGING_ONLY
