@@ -1,6 +1,7 @@
 import subprocess
 from google import genai
 import os
+import requests
 
 def get_git_dif():
     try:
@@ -26,7 +27,35 @@ def call_genai(code_diff):
     )
     return response.text
 
+def post_to_github(review_text):
+    repo = "krishlad24/Auto_Audit_Ai"
+    sha = os.getenv('COMMIT_SHA')
+    token = os.getenv('GITHUB_TOKEN')
+    url = f"https://api.github.com/repos/{repo}/commits/{sha}/comments"
+
+    headers = {
+        "Authorization": f"token {token}",
+        "Accept": "application/vnd.github.v3+json"
+    }
+    collapsible_body = f"""
+    _____AI Code Review Summary_____
+    <details>
+    <summary>Click here to see the full detailed analysis</summary>
+
+    {review_text}
+
+    </details>
+    """
+
+    data = {"body": collapsible_body}
+    response = requests.post(url, json=data, headers=headers)
+    if response.status_code == 201:
+        print("Successfully posted comment to GitHub!")
+    else:
+        print(f"Failed to post comment: {response.text}")
+
 if __name__ == "__main__":
     changes = get_git_dif()
-    print(call_genai(changes))
+    review = call_genai(changes)
+    post_to_github(review)
 
