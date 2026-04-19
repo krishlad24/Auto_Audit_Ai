@@ -7,6 +7,9 @@ steps:
       - 'GITHUB_SHA=$COMMIT_SHA'
       - 'GITHUB_EVENT_NAME=push'
       - 'GITHUB_WORKSPACE=/workspace'
+      - 'GITHUB_EVENT_PATH=/dev/null' 
+      - 'RUN_LOCAL=true'
+      - 'ACTIONS_RUNNER_DEBUG=true'
     
   # Step 2: Run a basic syntax check (Linter)
   - name: 'python:3.10-slim'
