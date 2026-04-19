@@ -4,6 +4,8 @@ steps:
     env:
       - 'VALIDATE_ALL_CODEBASE=false' # Only lint changed files to save time
       - 'GITHUB_TOKEN=$_GITHUB_TOKEN'
+      - 'GITHUB_SHA=$COMMIT_SHA'
+      - 'GITHUB_EVENT_NAME=push'
     
   # Step 2: Run a basic syntax check (Linter)
   - name: 'python:3.10-slim'
