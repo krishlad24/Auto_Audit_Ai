@@ -1,17 +1,20 @@
 steps:
   # Step 1: A simple "Hello World" to test the connection
-  - name: 'python:3.10-slim'
-    entrypoint: 'bash'
-    args: ['-c', 'echo "Google Cloud Build is connected to GitHub!"']
-
+  - name: 'github/super-linter:latest'
+    env:
+      - 'VALIDATE_ALL_CODEBASE=false' # Only lint changed files to save time
+      - 'GITHUB_TOKEN=$_GITHUB_TOKEN'
+    
   # Step 2: Run a basic syntax check (Linter)
   - name: 'python:3.10-slim'
     entrypoint: 'bash'
     args:
       - '-c'
       - |
-        pip install flake8
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        pip install google-genai
+        python ai_reviewer_script.py
+    env:
+      - 'API_KEY=$_GEMINI_API_KEY'
 
 options:
   logging: CLOUD_LOGGING_ONLY
