@@ -4,19 +4,18 @@ import os
 
 def get_git_dif():
     try:
+        subprocess.run(['git', 'fetch', '--unshallow'], capture_output=True)
 
-        commit_count = int(subprocess.check_output(['git', 'rev-list', '--count', 'HEAD']).decode().strip())
-        if commit_count > 1:
-            print("Detected regular update. Getting diff...")
-            return subprocess.check_output(['git', 'diff', 'HEAD~1', 'HEAD']).decode('utf-8')
+        diff = subprocess.check_output(['git', 'diff', 'HEAD~1', 'HEAD']).decode('utf-8')
 
-        else:
-            print("Detected first push. Fetching all files")
-            return subprocess.check_output(['git', 'diff', '4b825dc642cb6eb9a060e54bf8d69288fbee4904', 'HEAD']).decode('utf-8')
+        return diff
 
     except Exception as e:
-        return f"Error retrieving code: {str(e)}"
-
+        # 3. Fallback: If it's literally the first commit in the repo history
+        # just show the changes in the current commit
+        print(f"Fallback mode active: {e}")
+        return subprocess.check_output(['git', 'show', 'HEAD']).decode('utf-8')
+        
 
 client = genai.Client(api_key=os.getenv('API_KEY'))
 
