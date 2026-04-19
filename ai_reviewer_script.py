@@ -39,16 +39,16 @@ def post_to_github(review_text):
     }
 
     collapsible_body = f"""
-    _____AI Code Review Summary_____
+_____AI Code Review Summary_____
 
-    <details>
+<details>
 
-    <summary>Click here to see the full detailed analysis</summary>
+<summary>Click here to see the full detailed analysis</summary>
 
-    {review_text}
+{review_text}
 
-    </details>
-    """
+</details>
+"""
 
     data = {"body": collapsible_body}
     response = requests.post(url, json=data, headers=headers)
