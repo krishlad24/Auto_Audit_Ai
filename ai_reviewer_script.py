@@ -1,7 +1,9 @@
 import subprocess
 from google import genai
+from google.genai import errors
 import os
 import requests
+import time
 
 def get_git_dif():
     try:
@@ -12,8 +14,7 @@ def get_git_dif():
         return diff
 
     except Exception as e:
-        # 3. Fallback: If it's literally the first commit in the repo history
-        # just show the changes in the current commit
+        
         print(f"Fallback mode active: {e}")
         return subprocess.check_output(['git', 'show', 'HEAD']).decode('utf-8')
         
@@ -21,11 +22,20 @@ def get_git_dif():
 client = genai.Client(api_key=os.getenv('API_KEY'))
 
 def call_genai(code_diff):
-    response = client.models.generate_content(
-        model='gemini-2.5-flash',
-        contents=f"Review this git diff for security issues and logic bugs: {code_diff}"
-    )
-    return response.text
+    max_retries = 3
+    for attempt in range(max_retries):
+        try:
+            response = client.models.generate_content(
+                model='gemini-2.5-flash',
+                contents=f"Review this git diff for security issues and logic bugs: {code_diff}"
+            )
+            return response.text
+        except Exception as e:
+            if "503" in str(e) and attempt < max_retries - 1:
+                print(f"Server busy (503). Retrying in {2**attempt}s...")
+                time.sleep(2**attempt) # Exponential backoff (1s, 2s, 4s)
+                continue
+            return f"AI Analysis failed after {max_retries} attempts: {e}"
 
 def post_to_github(review_text):
     repo = "krishlad24/Auto_Audit_Ai"
