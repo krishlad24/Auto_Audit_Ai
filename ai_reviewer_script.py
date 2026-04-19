@@ -37,9 +37,12 @@ def post_to_github(review_text):
         "Authorization": f"token {token}",
         "Accept": "application/vnd.github.v3+json"
     }
+
     collapsible_body = f"""
     _____AI Code Review Summary_____
+
     <details>
+
     <summary>Click here to see the full detailed analysis</summary>
 
     {review_text}
