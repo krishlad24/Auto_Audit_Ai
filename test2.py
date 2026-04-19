@@ -25,6 +25,7 @@ if __name__ == "__main__":
 
     t1.add_dependency(t2)
     t2.add_dependency(t3)
+    t2.add_dependency(t2)
 
 
     run_tasks(t1)
