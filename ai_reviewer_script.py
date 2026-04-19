@@ -38,24 +38,22 @@ def post_to_github(review_text):
         "Accept": "application/vnd.github.v3+json"
     }
 
-    collapsible_body = f"""
-_____AI Code Review Summary_____
+    collapsible_body = (
+        "____AI code review____\n\n"
+        "<details>\n"
+        "<summary><b>Click here to see the full detailed analysis</b></summary>\n\n"
+        f"{review_text}\n\n"
+        "</details>"
+    )
 
-<details>
-
-<summary>Click here to see the full detailed analysis</summary>
-
-{review_text}
-
-</details>
-"""
 
     data = {"body": collapsible_body}
     response = requests.post(url, json=data, headers=headers)
     if response.status_code == 201:
         print("Successfully posted comment to GitHub!")
     else:
-        print(f"Failed to post comment: {response.text}")
+        print(f"Failed to post comment: Status: {response.status_code}")
+        print(f"Response: {response.text}")
 
 if __name__ == "__main__":
     changes = get_git_dif()
