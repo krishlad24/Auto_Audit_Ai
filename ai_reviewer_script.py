@@ -22,7 +22,7 @@ client = genai.Client(api_key=os.getenv('API_KEY'))
 
 def call_genai(code_diff):
     response = client.models.generate_content(
-        model='models/gemini-1.5-flash',
+        model='gemini-2.5-flash',
         contents=f"Review this git diff for security issues and logic bugs: {code_diff}"
     )
     return response.text
