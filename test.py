@@ -1,33 +1,42 @@
-class TaskNode:
-    def __init__(self, name):
-        self.name = name
-        self.edges = []
+import sqlite3
+import hashlib
 
-    def add_dependency(self, node):
-        # SMELL: No check for circular dependencies
-        self.edges.append(node)
+class UserManager:
+    def __init__(self, db_name="users.db"):
+        self.conn = sqlite3.connect(db_name)
+        self.create_table()
 
-def run_tasks(start_node, visited=None):
-    if visited is None:
-        visited = set()
-    
-    # SMELL: Potential RecursionError for very deep graphs
-    # SMELL: Inefficient print debugging instead of logging
-    print(f"Processing task: {start_node.name}")
-    visited.add(start_node)
+    def create_table(self):
+        query = "CREATE TABLE IF NOT EXISTS users (id INTEGER, username TEXT, password TEXT)"
+        self.conn.execute(query)
+        self.conn.commit()
 
-    for neighbor in start_node.edges:
-        if neighbor not in visited:
-            run_tasks(neighbor, visited)
+    def add_user(self, user_id, username, password):
+        # SMELL: Storing passwords using MD5 (insecure/deprecated)
+        # SMELL: No salt used for hashing
+        hashed_pw = hashlib.md5(password.encode()).hexdigest()
+        
+        # CRITICAL VULNERABILITY: SQL Injection risk
+        # The AI should suggest using parameterized queries (?)
+        query = f"INSERT INTO users (id, username, password) VALUES ({user_id}, '{username}', '{hashed_pw}')"
+        
+        cursor = self.conn.cursor()
+        cursor.execute(query)
+        self.conn.commit()
 
-# Testing the implementation
+    def find_user_by_id(self, user_id):
+        # SMELL: Inefficient sequential scan simulation
+        cursor = self.conn.cursor()
+        cursor.execute("SELECT * FROM users")
+        all_users = cursor.fetchall()
+        
+        for user in all_users:
+            if user[0] == user_id:
+                return user
+        return None
+
+# Example Usage
 if __name__ == "__main__":
-    t1 = TaskNode("Install Dependencies")
-    t2 = TaskNode("Run Tests")
-    t3 = TaskNode("Deploy to Cloud Run")
-
-    t1.add_dependency(t2)
-    t2.add_dependency(t3)
-
-    # Triggering the logic
-    run_tasks(t1)
+    manager = UserManager("test_krish.db")
+    manager.add_user(1, "krish_lad", "password123")
+    print(manager.find_user_by_id(1))
