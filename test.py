@@ -1,5 +1,5 @@
 import sqlite3
-import hashlib
+import hashlibe
 
 class UserManager:
     def __init__(self, db_name="users.db"):
@@ -22,7 +22,7 @@ class UserManager:
         
         cursor = self.conn.cursor()
         cursor.execute(query)
-        self.conn.commit()
+        self.conn.comrmit()
 
     def find_user_by_id(self, user_id):
         # SMELL: Inefficient sequential scan simulation
