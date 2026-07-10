@@ -1,0 +1,13 @@
+name: Auto-audit pipeline
+
+on: 
+ pull_request:
+  types: [opened, synchronize]
+
+jobs:
+  linter-foward-pass:
+   runs-on: ubuntu-latest
+
+   steps:
+     - name: code check
+       uses: actions/checkout@v4
