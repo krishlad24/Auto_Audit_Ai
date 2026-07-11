@@ -11,3 +11,30 @@ jobs:
    steps:
      - name: code check
        uses: actions/checkout@v4
+       with:
+         fetch-depth: 0
+
+     - name: Run Super-Linter
+       uses: super-linter/super-linter/slim@v7
+       env:
+         DEFAULT_BRANCH: main
+         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+         VALIDATE_ALL_CODEBASE: false
+         VALIDATE_PYTHON: true
+         VALIDATE_JAVASCRIPT_ES: true
+         VALIDATE_DOCKERFILE: true
+         VALIDATE_YAML: true
+
+     - name: Dispatch Event to Cloud Buffer
+       uses: distributhor/workflow-webhook-action@v3
+       with:
+         webhook_url: ${{ secrets.CLOUD_RUN_FUNCTION_URL }}
+         webhook_secret: ${{ secrets.WEBHOOK_SECRET_KEY }}
+         data: |
+           {
+             "pr_number": "${{ github.event.pull_request.number }}",
+             "commit_sha": "${{ github.event.pull_request.head.sha }}",
+             "repository": "${{ github.repository }}"
+           }
+         
