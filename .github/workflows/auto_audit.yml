@@ -27,7 +27,7 @@ jobs:
          VALIDATE_YAML: true
 
      - name: Dispatch Event to Cloud Buffer
-       uses: rodrigoalcarazdelaosa/workflow-webhook-action@v3
+       uses: rodrigoalcarazdelaosa/workflow-webhook-action@v2
        with:
          webhook_url: ${{ secrets.CLOUD_RUN_FUNCTION_URL }}
          webhook_secret: ${{ secrets.WEBHOOK_SECRET_KEY }}
