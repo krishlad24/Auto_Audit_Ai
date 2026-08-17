@@ -27,14 +27,17 @@ jobs:
          VALIDATE_YAML: true
 
      - name: Dispatch Event to Cloud Buffer
-       uses: distribits/action-webhook@v3
-       with:
-         webhook_url: ${{ secrets.CLOUD_RUN_FUNCTION_URL }}
-         webhook_secret: ${{ secrets.WEBHOOK_SECRET_KEY }}
-         data: |
-           {
+       env:
+         WEBHOOK_URL: ${{ secrets.CLOUD_RUN_FUNCTION_URL }}
+         WEBHOOK_SECRET: ${{ secrets.WEBHOOK_SECRET_KEY }}
+       run: |
+         curl -X POST "$WEBHOOK_URL" \
+           -H "Content-Type: application/json" \
+           -H "X-Webhook-Secret: $WEBHOOK_SECRET" \
+           -d '{
              "pr_number": "${{ github.event.pull_request.number }}",
              "commit_sha": "${{ github.event.pull_request.head.sha }}",
              "repository": "${{ github.repository }}"
-           }
+           }'
+      
          
