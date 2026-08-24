@@ -1,117 +1,69 @@
-"""Lightweight URL health checker and validation utility for repository testing."""
+"""Sample Python module for repository testing and CI/CD verification."""
 
-import json
-import logging
 import sys
 import unittest
-from dataclasses import asdict, dataclass
-from typing import Optional
-from urllib.parse import urlparse
-
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - [%(levelname)s] - %(message)s",
-)
 
 
-@dataclass
-class HealthCheckResult:
-    url: str
-    is_valid_format: bool
-    scheme: Optional[str]
-    host: Optional[str]
-    status: str
+def calculate_summary(numbers: list[float]) -> dict[str, float]:
+    """Calculate basic statistical metrics for a list of numbers."""
+    if not numbers:
+        raise ValueError("List of numbers cannot be empty.")
+
+    total = sum(numbers)
+    count = len(numbers)
+    return {
+        "count": float(count),
+        "total": float(total),
+        "mean": float(total / count),
+        "min": float(min(numbers)),
+        "max": float(max(numbers)),
+    }
 
 
-class URLValidator:
-    """Validates and processes URL configurations."""
-
-    @staticmethod
-    def validate(url: str) -> HealthCheckResult:
-        if not url or not isinstance(url, str):
-            return HealthCheckResult(
-                url=str(url),
-                is_valid_format=False,
-                scheme=None,
-                host=None,
-                status="INVALID_INPUT",
-            )
-
-        parsed = urlparse(url.strip())
-        is_valid = bool(parsed.scheme in ("http", "https") and parsed.netloc)
-
-        return HealthCheckResult(
-            url=url,
-            is_valid_format=is_valid,
-            scheme=parsed.scheme if is_valid else None,
-            host=parsed.netloc if is_valid else None,
-            status="READY" if is_valid else "INVALID_URL",
-        )
-
-    @classmethod
-    def batch_validate(cls, urls: list[str]) -> list[HealthCheckResult]:
-        return [cls.validate(u) for u in urls]
+def is_palindrome(text: str) -> bool:
+    """Check whether a given string is a palindrome, ignoring non-alphanumeric chars."""
+    cleaned = "".join(char.lower() for char in text if char.isalnum())
+    return cleaned == cleaned[::-1]
 
 
-class TestURLValidator(unittest.TestCase):
-    """Test suite covering edge cases and URL parsing rules."""
+class TestCoreFunctions(unittest.TestCase):
+    """Unit test suite for validating core logic."""
 
-    def test_valid_https_url(self):
-        res = URLValidator.validate("https://api.github.com/events")
-        self.assertTrue(res.is_valid_format)
-        self.assertEqual(res.scheme, "https")
-        self.assertEqual(res.host, "api.github.com")
-        self.assertEqual(res.status, "READY")
+    def test_calculate_summary_valid(self):
+        data = [10.0, 20.0, 30.0, 40.0]
+        result = calculate_summary(data)
+        self.assertEqual(result["count"], 4.0)
+        self.assertEqual(result["total"], 100.0)
+        self.assertEqual(result["mean"], 25.0)
+        self.assertEqual(result["min"], 10.0)
+        self.assertEqual(result["max"], 40.0)
 
-    def test_missing_scheme(self):
-        res = URLValidator.validate("github.com/features")
-        self.assertFalse(res.is_valid_format)
-        self.assertEqual(res.status, "INVALID_URL")
+    def test_calculate_summary_empty(self):
+        with self.assertRaises(ValueError):
+            calculate_summary([])
 
-    def test_empty_input(self):
-        res = URLValidator.validate("")
-        self.assertFalse(res.is_valid_format)
-        self.assertEqual(res.status, "INVALID_INPUT")
-
-    def test_batch_validation(self):
-        targets = [
-            "https://httpbin.org/get",
-            "invalid-url",
-            "http://localhost:8000/health",
-        ]
-        results = URLValidator.batch_validate(targets)
-        self.assertEqual(len(results), 3)
-        self.assertTrue(results[0].is_valid_format)
-        self.assertFalse(results[1].is_valid_format)
-        self.assertTrue(results[2].is_valid_format)
+    def test_is_palindrome(self):
+        self.assertTrue(is_palindrome("A man, a plan, a canal: Panama"))
+        self.assertTrue(is_palindrome("racecar"))
+        self.assertFalse(is_palindrome("github"))
 
 
-def run_pipeline() -> int:
-    """Execute test verification and sample batch processing."""
-    logging.info("Executing automated test suite...")
-    suite = unittest.TestLoader().loadTestsFromTestCase(TestURLValidator)
+def main():
+    """Run tests or execute sample logic."""
+    print("Running embedded test suite...")
+    suite = unittest.TestLoader().loadTestsFromTestCase(TestCoreFunctions)
     runner = unittest.TextTestRunner(verbosity=2)
-    test_result = runner.run(suite)
+    result = runner.run(suite)
 
-    if not test_result.wasSuccessful():
-        logging.error("One or more tests failed.")
-        return 1
+    if not result.wasSuccessful():
+        print("Tests failed!")
+        sys.exit(1)
 
-    logging.info("All tests passed! Running demo execution...")
-    sample_urls = [
-        "https://api.github.com",
-        "https://raw.githubusercontent.com",
-        "ftp://invalid-target.internal",
-        "https://google.com/search?q=test",
-    ]
-
-    processed = URLValidator.batch_validate(sample_urls)
-    output = [asdict(r) for r in processed]
-    print("\nBatch Verification Output:")
-    print(json.dumps(output, indent=2))
-    return 0
+    print("\nAll unit tests passed successfully!")
+    sample_data = [4.5, 9.2, 1.8, 12.0]
+    print(f"Sample calculation for {sample_data}:")
+    print(calculate_summary(sample_data))
 
 
 if __name__ == "__main__":
-    sys.exit(run_pipeline())
+    main()
