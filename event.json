@@ -1,0 +1,15 @@
+{
+  "pull_request": {
+    "number": 1,
+    "commits": 1,
+    "head": {
+      "sha": "cd8fda75d9f94551b7d178cf3dc2f310fe837afe"
+    },
+    "base": {
+      "ref": "main"
+    }
+  },
+  "repository": {
+    "full_name": "owner/repo"
+  }
+}
