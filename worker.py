@@ -11,7 +11,7 @@ from tree_sitter import Language, Parser, Query
 from tree_sitter import QueryCursor
 from google import genai
 from google.genai import types
-
+from chromadb.utils import embedding_functions
 
 # --- CONFIGURATION & CLIENT INITIALIZATION ---
 
@@ -44,8 +44,8 @@ IMPORT_QUERY = Query(PY_LANGUAGE, """
 
 # Vector DB setup
 chroma_client = chromadb.Client()
-emb_fn = embedding_functions.SentenceTransformerEmbeddingFunction(
-    model_name="all-MiniLM-L6-v2"
+emb_fn = embedding_functions.GoogleGenAiEmbeddingFunction(
+    api_key=os.getenv("GEMINI_API_KEY")
 )
 
 
