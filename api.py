@@ -1,9 +1,13 @@
 from fastapi import FastAPI, BackgroundTasks, HTTPException, Request
 import redis 
 import json
+import os
 
 app = FastAPI()
-r = redis.Redis(host='localhost', port=6379, db=0)
+REDIS_HOST = os.getenv("REDIS_HOST", "redis-queue")
+REDIS_PORT = int(os.getenv("REDIS_PORT", 6379))
+
+r = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, db=0)
 
 QUEUE_NAME = "github_tasks"
 
