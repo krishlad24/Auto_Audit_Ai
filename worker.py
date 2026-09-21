@@ -44,9 +44,7 @@ IMPORT_QUERY = Query(PY_LANGUAGE, """
 
 # Vector DB setup
 chroma_client = chromadb.Client()
-emb_fn = embedding_functions.GoogleGenAiEmbeddingFunction(
-    api_key=os.getenv("GEMINI_API_KEY")
-)
+emb_fn = embedding_functions.GoogleGenaiEmbeddingFunction()
 
 
 def extract_file_dependencies(code: str, filename: str):
